@@ -1,0 +1,105 @@
+/* ==========================================================================
+   motion.css — sistema de movimento
+   Regra única do projeto: movimento existe para criar HIERARQUIA e
+   NARRATIVA. Cada efeito abaixo tem uma função declarada.
+   Toda animação usa apenas transform / opacity / clip-path — propriedades
+   compostas pela GPU, sem reflow.
+   ========================================================================== */
+
+/* --- 1. REVEAL — "o que entra primeiro é o que importa primeiro" ---------
+   Estado inicial aplicado só quando o JS está ativo (.js no <html>),
+   para que a página continue legível sem JavaScript.                    */
+
+.js .js-reveal {
+  opacity: 0;
+  transform: translate3d(0, 26px, 0);
+  transition:
+    opacity var(--dur-base) var(--ease-out) var(--d, 0ms),
+    transform var(--dur-base) var(--ease-out) var(--d, 0ms);
+  will-change: opacity, transform;
+}
+.js .js-reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+/* Escalonamento por índice: --i é definido no HTML ou pelo JS. */
+.js .js-reveal { --d: calc(var(--i, 0) * 85ms); }
+
+/* Variante máscara — a imagem é DESCOBERTA por uma cortina que sobe.
+   Nota técnica: a cortina é um pseudo-elemento, não um clip-path no
+   próprio elemento. Um clip-path zera a área visível do elemento, e o
+   IntersectionObserver passa a calcular interseção 0 — o reveal nunca
+   dispararia. A cortina preserva a caixa e o efeito.                  */
+.js .js-mask { position: relative; }
+.js .js-mask::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  background: var(--mask-c, var(--c-cream));
+  transform-origin: bottom;
+  transform: scaleY(1);
+  transition: transform var(--dur-mask) var(--ease-mask) var(--d, 0ms);
+  z-index: 6;
+  pointer-events: none;
+}
+.js .js-mask.is-in::after { transform: scaleY(0); }
+
+/* Variante linha — filetes que se desenham. */
+.js .js-rule {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-slow) var(--ease-mask) var(--d, 0ms);
+}
+.js .js-rule.is-in { transform: scaleX(1); }
+
+/* --- 2. TEXTO POR LINHAS — leitura progressiva do título ----------------
+   O JS quebra o título em .line > span. Cada linha sobe de trás de uma
+   máscara: o olho lê na ordem em que o conteúdo importa.               */
+.lines { display: block; }
+.lines .line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.06em;   /* evita corte de descendentes (g, p, ç) */
+  margin-bottom: -0.06em;
+}
+.js .lines .line > span {
+  display: block;
+  transform: translate3d(0, 106%, 0);
+  transition: transform 1000ms var(--ease-mask) var(--d, 0ms);
+  will-change: transform;
+}
+.js .lines.is-in .line > span { transform: none; }
+
+/* --- 3. PARALLAX — profundidade, sem deriva -----------------------------
+   --py é escrito pelo JS num rAF único. Amplitude curta de propósito.  */
+[data-parallax] {
+  transform: translate3d(0, var(--py, 0px), 0);
+  will-change: transform;
+}
+
+/* --- 4. STICKY — a imagem segura o olhar enquanto o texto avança -------- */
+.sticky-col {
+  position: sticky;
+  top: clamp(5rem, 12vh, 8rem);
+  align-self: start;
+}
+
+/* --- 5. CONTADOR / NUMERAL — a data como evento gráfico ----------------- */
+.js .js-count { opacity: 0; transform: translate3d(0, 0.16em, 0) scale(0.985); }
+.js .js-count.is-in {
+  opacity: 1;
+  transform: none;
+  transition: opacity 900ms var(--ease-out), transform 1200ms var(--ease-mask);
+}
+
+/* --- 6. ENTRADA DA PÁGINA — uma única sequência orquestrada ------------- */
+@keyframes veil-lift { to { transform: translate3d(0, -101%, 0); } }
+.veil {
+  position: fixed;
+  inset: 0;
+  background: var(--c-navy);
+  z-index: 9500;
+  pointer-events: none;
+  animation: veil-lift 900ms var(--ease-mask) 260ms forwards;
+}
+@media (prefers-reduced-motion: reduce) { .veil { display: none; } }

@@ -1,0 +1,111 @@
+/* ==========================================================================
+   layout.css — grid editorial, seções, trilhos verticais
+   Um único grid de 12 colunas governa toda a página. Assimetria vem de
+   onde os elementos começam e terminam, não de margens improvisadas.
+   ========================================================================== */
+
+.shell {
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--col-gap);
+}
+
+/* Colunas — mobile-first: tudo ocupa a largura inteira por padrão. */
+[class*='col-'] { grid-column: 1 / -1; }
+
+@media (min-width: 860px) {
+  .col-1-5  { grid-column: 1 / 6; }
+  .col-1-6  { grid-column: 1 / 7; }
+  .col-1-7  { grid-column: 1 / 8; }
+  .col-2-7  { grid-column: 2 / 8; }
+  .col-6-13 { grid-column: 6 / 13; }
+  .col-7-13 { grid-column: 7 / 13; }
+  .col-8-13 { grid-column: 8 / 13; }
+  .col-3-11 { grid-column: 3 / 11; }
+  .col-5-13 { grid-column: 5 / 13; }
+}
+
+/* --- Seção --------------------------------------------------------------- */
+.section {
+  position: relative;
+  background: var(--bg);
+  color: var(--fg);
+  padding-block: var(--s-7);
+  /* isolation cria contexto de empilhamento próprio: os elementos
+     sobrepostos de uma seção nunca vazam para a vizinha.               */
+  isolation: isolate;
+}
+
+.section--flush { padding-block: 0; }
+.section--tight { padding-block: var(--s-6); }
+
+/* Cabeçalho de seção: numeração editorial + título + filete */
+.section-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-3);
+  padding-bottom: var(--s-3);
+  margin-bottom: var(--s-4);
+  border-bottom: var(--hairline) solid var(--rule);
+}
+.section-head__num {
+  font-family: var(--font-meta);
+  font-size: var(--t-micro);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  flex: none;
+  padding-top: 0.3em;
+}
+.section-head__title { font-size: var(--t-d3); }
+.section-head__aside { margin-left: auto; }
+
+@media (max-width: 640px) {
+  .section-head { flex-wrap: wrap; gap: var(--s-1) var(--s-2); }
+  .section-head__aside { margin-left: 0; flex-basis: 100%; }
+}
+
+/* --- Trilho vertical (tategaki) -----------------------------------------
+   Referência direta à composição japonesa vertical do material
+   original. Puramente decorativo → aria-hidden no HTML.               */
+.rail {
+  position: absolute;
+  top: 5.5rem; bottom: 2rem;
+  writing-mode: vertical-rl;
+  font-family: var(--font-body);
+  font-size: clamp(0.72rem, 1.05vw, 0.94rem);
+  letter-spacing: 0.34em;
+  color: var(--fg-soft);
+  opacity: 0.5;
+  display: flex;
+  align-items: center;
+  gap: 2.2em;
+  pointer-events: none;
+  z-index: var(--z-rail);
+  user-select: none;
+}
+.rail--right { right: calc(var(--gutter) * 0.34); }
+.rail--left  { left:  calc(var(--gutter) * 0.34); }
+
+@media (max-width: 900px) { .rail { display: none; } }
+
+/* --- Transição entre blocos ---------------------------------------------
+   Em vez de um corte duro creme→marinho, uma aba diagonal costura as
+   duas seções. Feita em CSS puro (sem imagem, sem SVG externo).       */
+.seam {
+  position: absolute;
+  left: 0; right: 0;
+  height: clamp(48px, 7vw, 120px);
+  pointer-events: none;
+  z-index: 2;
+}
+.seam--top    { top: 0;    transform: translateY(-99%); }
+.seam--bottom { bottom: 0; transform: translateY(99%); }
+.seam__fill   { width: 100%; height: 100%; display: block; }

@@ -1,0 +1,118 @@
+/* ==========================================================================
+   tokens.css — Design tokens
+   Sistema visual único: cor, tipografia, escala, ritmo, movimento.
+   Nenhum valor bruto (hex, px de espaçamento, easing) deve aparecer
+   fora deste arquivo. Trocar a marca = trocar este arquivo.
+   ========================================================================== */
+
+:root {
+  /* --- COR -------------------------------------------------------------
+     Extraída do material original:
+       #203673  azul-marinho da marca
+       #FBFAEE  creme de fundo
+       #53759B  azul-ardósia secundário
+     Acrescentado: 朱 (shu) — vermelho-vermilhão de selo japonês, usado
+     com extrema parcimônia como único acento. Justificativa: o conceito
+     Japão já existia na peça (pagode + katakana) mas sem cor de apoio.  */
+
+  --c-navy:        #203673;
+  --c-navy-deep:   #16244d;
+  --c-navy-abyss:  #0e1733;
+  --c-cream:       #fbfaee;
+  --c-cream-dim:   #efedd9;
+  --c-slate:       #53759b;
+  --c-slate-ink:   #3d5c82;   /* variante escurecida: texto pequeno sobre creme */
+  --c-shu:         #d9482f;
+  --c-shu-soft:    #e8705a;
+
+  /* Papéis semânticos — use SEMPRE estes, nunca os brutos acima. */
+  --bg:            var(--c-cream);
+  --fg:            var(--c-navy);
+  --fg-soft:       var(--c-slate-ink);
+  --rule:          color-mix(in srgb, var(--c-navy) 18%, transparent);
+  --accent:        var(--c-shu);
+
+  /* Inversão (seções escuras) — aplicada por [data-scheme="dark"] */
+  --bg-invert:     var(--c-navy);
+  --fg-invert:     var(--c-cream);
+  --fg-invert-soft:color-mix(in srgb, var(--c-cream) 62%, var(--c-navy));
+  --rule-invert:   color-mix(in srgb, var(--c-cream) 22%, transparent);
+
+  /* --- TIPOGRAFIA ------------------------------------------------------
+     Anton      → display. É a fonte do próprio logotipo CRISTO. Mantida
+                  por fidelidade de marca.
+     Zen Kaku   → corpo e interface. Fonte japonesa com Latin completo:
+     Gothic New   resolve キリスト・生きている nativamente e dá ao texto um
+                  desenho humanista, longe do Montserrat genérico.
+     Archivo    → rótulos, numerais, meta. Tabular e estável.            */
+
+  --font-display: 'Anton', 'Archivo', 'Arial Narrow', sans-serif;
+  --font-body:    'Zen Kaku Gothic New', 'Hiragino Sans', 'Noto Sans JP', system-ui, sans-serif;
+  --font-meta:    'Archivo', 'Zen Kaku Gothic New', system-ui, sans-serif;
+
+  /* Escala fluida — clamp(min, preferido, max). Um único sistema para
+     desktop, tablet e mobile: nada "quebra", tudo interpola.            */
+  --t-hero:   clamp(3.4rem,  13.5vw, 13rem);
+  --t-d1:     clamp(2.8rem,   8.2vw,  7.5rem);
+  --t-d2:     clamp(2.1rem,   5.4vw,  4.6rem);
+  --t-d3:     clamp(1.5rem,   3.2vw,  2.6rem);
+  --t-lead:   clamp(1.06rem,  1.5vw,  1.42rem);
+  --t-body:   clamp(0.98rem,  1.02vw, 1.09rem);
+  --t-small:  0.83rem;
+  --t-micro:  0.68rem;
+
+  --lh-display: 0.86;
+  --lh-tight:   1.12;
+  --lh-body:    1.72;
+
+  --track-display: -0.022em;
+  --track-label:    0.24em;
+
+  /* --- RITMO / GRID ---------------------------------------------------- */
+  --gutter:     clamp(1.25rem, 5vw, 5.5rem);
+  --maxw:       1560px;
+  --maxw-text:  62ch;
+  --col-gap:    clamp(1.25rem, 2.6vw, 2.75rem);
+
+  --s-1:  0.5rem;
+  --s-2:  1rem;
+  --s-3:  1.75rem;
+  --s-4:  3rem;
+  --s-5:  5rem;
+  --s-6:  clamp(3.5rem, 8vh, 6.5rem);
+  --s-7:  clamp(4.5rem, 10vh, 8.5rem);
+
+  /* --- FORMA ------------------------------------------------------------
+     Bordas retas. O original usava cantos arredondados de "card"; o
+     sistema editorial troca isso por filetes e recortes retos.          */
+  --radius:      0px;
+  --radius-soft: 2px;
+  --hairline:    1px;
+
+  /* --- MOVIMENTO -------------------------------------------------------- */
+  --ease-out:  cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-mask: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --dur-fast:  260ms;
+  --dur-base:  620ms;
+  --dur-slow:  1100ms;
+  --dur-mask:  1400ms;
+
+  /* cor da cortina de revelação — sobrescrita nas seções escuras */
+  --mask-c: var(--c-cream);
+
+  --z-cursor: 9000;
+  --z-nav:    800;
+  --z-rail:   5;
+}
+
+/* Seções em fundo escuro herdam os papéis invertidos. Isso mantém um
+   único conjunto de componentes funcionando nos dois esquemas.          */
+[data-scheme='dark'] {
+  --bg:      var(--bg-invert);
+  --fg:      var(--fg-invert);
+  --fg-soft: var(--fg-invert-soft);
+  --rule:    var(--rule-invert);
+  --accent:  var(--c-shu-soft);
+}
