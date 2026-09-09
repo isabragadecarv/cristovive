@@ -1,0 +1,326 @@
+/* ==========================================================================
+   components.css — componentes reutilizáveis
+   Cada bloco aqui é independente de seção: pode ser movido, repetido ou
+   levado para uma página nova sem ajustes.
+   ========================================================================== */
+
+/* ------------------------------------------------------------------ NAV --*/
+.site-nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: var(--z-nav);
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: 0.9rem var(--gutter);
+  color: var(--c-cream);
+  mix-blend-mode: normal;
+  transition: transform 480ms var(--ease-out), background-color 480ms var(--ease-out),
+              color 480ms var(--ease-out), border-color 480ms var(--ease-out);
+  border-bottom: var(--hairline) solid transparent;
+}
+/* Fundo aparece só depois de sair do topo — mantém o hero limpo. */
+.site-nav.is-stuck {
+  background: color-mix(in srgb, var(--c-cream) 88%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  backdrop-filter: blur(14px) saturate(1.4);
+  color: var(--c-navy);
+  border-bottom-color: color-mix(in srgb, var(--c-navy) 12%, transparent);
+}
+/* Esconde ao descer, revela ao subir: devolve tela ao conteúdo. */
+.site-nav.is-hidden { transform: translateY(-105%); }
+
+.site-nav__mark {
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+}
+.site-nav__mark span { color: var(--c-shu); }
+
+.site-nav__links {
+  display: flex;
+  gap: clamp(1rem, 2.2vw, 2.4rem);
+  margin-left: auto;
+  align-items: center;
+}
+.site-nav__link {
+  font-family: var(--font-meta);
+  font-size: var(--t-micro);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  position: relative;
+  padding-block: 0.4rem;
+}
+/* Sublinhado que varre da esquerda — microinteração, não decoração. */
+.site-nav__link::after {
+  content: '';
+  position: absolute;
+  left: 0; bottom: 0;
+  width: 100%; height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 420ms var(--ease-out);
+}
+.site-nav__link:hover::after,
+.site-nav__link[aria-current='true']::after { transform: scaleX(1); }
+.site-nav__link[aria-current='true'] { color: var(--c-shu); }
+
+@media (max-width: 780px) {
+  .site-nav__links { display: none; }
+}
+
+/* --- Menu de telas pequenas ---------------------------------------------
+   Sem isso, abaixo de 780px o site ficaria sem navegação alguma.       */
+.menu-btn {
+  display: none;
+  margin-left: auto;
+  width: 44px; height: 44px;       /* alvo de toque confortável */
+  align-items: center;
+  justify-content: center;
+}
+.menu-btn__bars { display: grid; gap: 6px; width: 22px; }
+.menu-btn__bars i {
+  display: block; height: 1.5px; width: 100%;
+  background: currentColor;
+  transition: transform 380ms var(--ease-mask), opacity 260ms linear;
+}
+[aria-expanded='true'] .menu-btn__bars i:first-child { transform: translateY(3.75px) rotate(45deg); }
+[aria-expanded='true'] .menu-btn__bars i:last-child  { transform: translateY(-3.75px) rotate(-45deg); }
+
+.menu {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-nav) - 1);
+  background: var(--c-navy);
+  color: var(--c-cream);
+  display: grid;
+  align-content: center;
+  padding: var(--gutter);
+  opacity: 0;
+  transition: opacity 320ms var(--ease-out);
+}
+.menu.is-open { opacity: 1; }
+.menu__inner { display: grid; gap: var(--s-2); }
+.menu__link {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 9vw, 3.2rem);
+  line-height: 1;
+  text-transform: uppercase;
+  padding-block: 0.2em;
+  border-bottom: var(--hairline) solid color-mix(in srgb, var(--c-cream) 18%, transparent);
+}
+.menu__link:last-of-type { color: var(--c-shu-soft); }
+.menu__meta { margin-top: var(--s-3); color: color-mix(in srgb, var(--c-cream) 60%, var(--c-navy)); }
+
+@media (max-width: 780px) { .menu-btn { display: flex; } }
+@media (min-width: 781px) { .menu { display: none !important; } }
+
+/* Barra de progresso de leitura — 1px, sem peso visual. */
+.progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  width: 100%;
+  transform-origin: left;
+  transform: scaleX(0);
+  background: var(--c-shu);
+  z-index: calc(var(--z-nav) + 1);
+  will-change: transform;
+}
+
+/* ----------------------------------------------------------------- BOTÃO -*/
+.btn {
+  --btn-fg: var(--c-cream);
+  --btn-bg: var(--c-navy);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1.05rem 1.9rem;
+  font-family: var(--font-meta);
+  font-size: var(--t-small);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--btn-fg);
+  background: var(--btn-bg);
+  overflow: hidden;
+  isolation: isolate;
+  transition: color 420ms var(--ease-out);
+}
+/* Preenchimento que sobe de baixo no hover. */
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--c-shu);
+  transform: translateY(101%);
+  transition: transform 480ms var(--ease-mask);
+  z-index: -1;
+}
+.btn:hover::before,
+.btn:focus-visible::before { transform: translateY(0); }
+
+.btn__arrow { transition: transform 480ms var(--ease-mask); }
+.btn:hover .btn__arrow { transform: translateX(5px); }
+
+ /* Sobre fundo marinho o botão padrão (marinho) sumiria. A variante
+    invertida mantém o mesmo componente com os papéis trocados.       */
+.btn--invert { --btn-fg: var(--c-navy); --btn-bg: var(--c-cream); }
+.btn--invert:hover, .btn--invert:focus-visible { color: var(--c-cream); }
+
+.btn--ghost {
+  --btn-fg: var(--fg);
+  --btn-bg: transparent;
+  border: var(--hairline) solid var(--rule);
+}
+.btn--ghost:hover { color: var(--c-cream); }
+
+/* Estado desabilitado — usado enquanto a inscrição não tem URL. */
+.btn[aria-disabled='true'] {
+  cursor: not-allowed;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------ PLACEHOLDER-*/
+/* Convenção visual única para "informação ainda não definida".
+   Nunca inventar dado: mostrar honestamente que falta.               */
+.ph {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--font-meta);
+  font-size: var(--t-micro);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--accent) 82%, var(--fg));
+  border: 1px dashed color-mix(in srgb, var(--accent) 38%, transparent);
+  padding: 0.38rem 0.72rem;
+  white-space: nowrap;
+}
+.ph::before {
+  content: '';
+  width: 4px; height: 4px;
+  background: color-mix(in srgb, var(--accent) 70%, transparent);
+  flex: none;
+}
+.ph--block { display: flex; width: fit-content; }
+
+/* ------------------------------------------------------------------ MÍDIA -*/
+/* Figura com máscara de revelação. A imagem entra "por baixo" de uma
+   cortina que abre — reveal, não fade genérico.                      */
+.plate {
+  position: relative;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--c-navy) 8%, var(--c-cream));
+}
+.plate img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.06);
+  transition: transform 900ms var(--ease-out), filter 900ms var(--ease-out);
+  will-change: transform;
+}
+.plate.is-in img { transform: scale(1); }
+.plate:hover img { transform: scale(1.045); }
+
+.plate--tall   { aspect-ratio: 3 / 4; }
+.plate--wide   { aspect-ratio: 3 / 2; }
+.plate--square { aspect-ratio: 1 / 1; }
+
+.plate__cap {
+  position: absolute;
+  left: 0; bottom: 0;
+  padding: 0.6rem 0.85rem;
+  font-family: var(--font-meta);
+  font-size: var(--t-micro);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-cream);
+  background: color-mix(in srgb, var(--c-navy) 82%, transparent);
+  transform: translateY(100%);
+  transition: transform 520ms var(--ease-mask);
+}
+.plate:hover .plate__cap,
+.plate:focus-within .plate__cap { transform: translateY(0); }
+
+/* --------------------------------------------------------------- MARQUEE -*/
+/* Faixa contínua. A velocidade responde ao scroll (--mq-boost vem do JS),
+   então o movimento comunica ritmo em vez de girar solto.            */
+.marquee {
+  --mq-dur: 34s;
+  --mq-boost: 1;
+  position: relative;
+  overflow: hidden;
+  border-block: var(--hairline) solid var(--rule);
+  padding-block: clamp(0.7rem, 1.4vw, 1.15rem);
+  user-select: none;
+}
+.marquee__track {
+  display: flex;
+  width: max-content;
+  gap: 0;
+  animation: mq-scroll var(--mq-dur) linear infinite;
+  animation-play-state: running;
+  will-change: transform;
+}
+.marquee__group {
+  display: flex;
+  align-items: center;
+  gap: clamp(1.2rem, 2.4vw, 2.4rem);
+  padding-right: clamp(1.2rem, 2.4vw, 2.4rem);
+  flex: none;
+}
+.marquee__item {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3.6vw, 3rem);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  white-space: nowrap;
+}
+.marquee__item--out {
+  color: transparent;
+  -webkit-text-stroke: 1.4px currentColor;
+}
+.marquee__dot {
+  width: clamp(6px, 0.7vw, 9px);
+  aspect-ratio: 1;
+  background: var(--accent);
+  flex: none;
+}
+@keyframes mq-scroll { to { transform: translate3d(-50%, 0, 0); } }
+
+/* --------------------------------------------------------------- CURSOR --*/
+/* Só em ponteiro fino. Anel discreto que cresce sobre alvos clicáveis. */
+.cursor {
+  position: fixed;
+  top: 0; left: 0;
+  width: 26px; aspect-ratio: 1;
+  border: 1px solid var(--c-navy);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: var(--z-cursor);
+  transform: translate3d(-50%, -50%, 0);
+  transition: width 340ms var(--ease-out), background-color 340ms var(--ease-out),
+              border-color 340ms var(--ease-out), opacity 240ms linear;
+  opacity: 0;
+  mix-blend-mode: difference;
+  filter: invert(1);
+  will-change: transform;
+}
+.cursor.is-live { opacity: 1; }
+.cursor.is-hot {
+  width: 62px;
+  background: color-mix(in srgb, var(--c-shu) 22%, transparent);
+  border-color: var(--c-shu);
+}
+@media (hover: none), (pointer: coarse) { .cursor { display: none; } }
